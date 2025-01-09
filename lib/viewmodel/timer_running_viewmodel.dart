@@ -16,7 +16,7 @@ StateNotifierProvider.autoDispose.family<TimerRunningViewModel, TimerRunningStat
 
 class TimerRunningState {
   final int currentRound;
-  final int remainingTime;
+  final int remainingTime; // In milliseconds
   final bool isBreak;
   final bool isFinished;
 
@@ -40,33 +40,48 @@ class TimerRunningState {
       isFinished: isFinished ?? this.isFinished,
     );
   }
+
+  // Formatted time in mm:ss:SS format
+  String get formattedTime {
+    final minutes = (remainingTime ~/ 60000).toString().padLeft(2, '0');
+    final seconds = ((remainingTime % 60000) ~/ 1000).toString().padLeft(2, '0');
+    final milliseconds = ((remainingTime % 1000) ~/ 10).toString().padLeft(2, '0');
+    return '$minutes:$seconds:$milliseconds';
+  }
 }
+
 
 class TimerRunningViewModel extends StateNotifier<TimerRunningState> {
   Timer? _timer;
   final TimerSettings settings;
   final Ticker ticker;
+  final Stopwatch stopwatch = Stopwatch();
 
   TimerRunningViewModel(this.settings, {required this.ticker})
       : super(TimerRunningState(
     currentRound: 1,
-    remainingTime: settings.roundDuration.inSeconds,
+    remainingTime: settings.roundDuration.inMilliseconds,
     isBreak: false,
     isFinished: false,
   ));
 
-
   void start() {
+    stopwatch.reset(); // Ensure stopwatch starts from 0
+    stopwatch.start();
     _startCountdown();
   }
 
   void _startCountdown() {
     _timer?.cancel();
-    _timer = ticker(const Duration(seconds: 1), (timer) {
-      if (state.remainingTime > 0) {
-        state = state.copyWith(remainingTime: state.remainingTime - 1);
+    _timer = ticker(const Duration(milliseconds: 10), (timer) {
+      final elapsedTime = stopwatch.elapsedMilliseconds;
+      final remaining = settings.roundDuration.inMilliseconds - elapsedTime;
+
+      if (remaining > 0) {
+        state = state.copyWith(remainingTime: remaining);
       } else {
         timer.cancel();
+        stopwatch.stop();
         _transitionToNextPhase();
       }
     });
@@ -77,34 +92,37 @@ class TimerRunningViewModel extends StateNotifier<TimerRunningState> {
       if (state.currentRound < settings.roundCount) {
         state = state.copyWith(
           currentRound: state.currentRound + 1,
-          remainingTime: settings.roundDuration.inSeconds,
+          remainingTime: settings.roundDuration.inMilliseconds,
           isBreak: false,
         );
-        _startCountdown();
+        start(); // Restart timer for next round
       } else {
         _finishTimer();
       }
     } else {
       state = state.copyWith(
-        remainingTime: settings.breakDuration.inSeconds,
+        remainingTime: settings.breakDuration.inMilliseconds,
         isBreak: true,
       );
-      _startCountdown();
+      start(); // Restart timer for break
     }
   }
 
   void _finishTimer() {
     _timer?.cancel();
+    stopwatch.stop();
     state = state.copyWith(isFinished: true);
   }
 
   void stopTimer() {
     _timer?.cancel();
+    stopwatch.stop();
   }
 
   @override
   void dispose() {
     _timer?.cancel();
+    stopwatch.stop();
     super.dispose();
   }
 }

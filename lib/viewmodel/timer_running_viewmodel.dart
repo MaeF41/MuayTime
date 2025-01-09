@@ -50,12 +50,11 @@ class TimerRunningState {
   }
 }
 
-
 class TimerRunningViewModel extends StateNotifier<TimerRunningState> {
   Timer? _timer;
   final TimerSettings settings;
   final Ticker ticker;
-  final Stopwatch stopwatch = Stopwatch();
+  int elapsedTicks = 0;
 
   TimerRunningViewModel(this.settings, {required this.ticker})
       : super(TimerRunningState(
@@ -66,22 +65,21 @@ class TimerRunningViewModel extends StateNotifier<TimerRunningState> {
   ));
 
   void start() {
-    stopwatch.reset(); // Ensure stopwatch starts from 0
-    stopwatch.start();
+    elapsedTicks = 0;
     _startCountdown();
   }
 
   void _startCountdown() {
     _timer?.cancel();
     _timer = ticker(const Duration(milliseconds: 10), (timer) {
-      final elapsedTime = stopwatch.elapsedMilliseconds;
+      elapsedTicks += 1;
+      final elapsedTime = elapsedTicks * 10; // Total elapsed time in ms
       final remaining = settings.roundDuration.inMilliseconds - elapsedTime;
 
       if (remaining > 0) {
         state = state.copyWith(remainingTime: remaining);
       } else {
         timer.cancel();
-        stopwatch.stop();
         _transitionToNextPhase();
       }
     });
@@ -110,19 +108,16 @@ class TimerRunningViewModel extends StateNotifier<TimerRunningState> {
 
   void _finishTimer() {
     _timer?.cancel();
-    stopwatch.stop();
     state = state.copyWith(isFinished: true);
   }
 
   void stopTimer() {
     _timer?.cancel();
-    stopwatch.stop();
   }
 
   @override
   void dispose() {
     _timer?.cancel();
-    stopwatch.stop();
     super.dispose();
   }
 }

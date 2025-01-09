@@ -45,23 +45,17 @@ void main() {
           ticker: fakeTicker,
         );
 
-        // Ensure the timer hasn't started yet
         expect(viewModel.state.remainingTime, settings.roundDuration.inMilliseconds);
 
-        // Start the timer
         viewModel.start();
 
-        // Simulate the timer ticking
         async.elapse(const Duration(milliseconds: 10));
 
-        // Verify the timer is running and has decremented remainingTime with a small tolerance
-        expect(
-          viewModel.state.remainingTime,
-          closeTo(settings.roundDuration.inMilliseconds - 10, 10), // Allow ±10ms tolerance
-        );
+        expect(viewModel.state.remainingTime, settings.roundDuration.inMilliseconds - 10);
+
+        async.elapse(const Duration(milliseconds: 20));
       });
     });
-
 
     test('Start transitions to countdown state with FakeAsync', () {
       FakeAsync().run((async) {
@@ -76,10 +70,10 @@ void main() {
 
         viewModel.start();
         async.elapse(const Duration(seconds: 1));
-        expect(viewModel.state.remainingTime, settings.roundDuration.inMilliseconds - 1000); //milliseconds
+        expect(viewModel.state.remainingTime,
+            settings.roundDuration.inMilliseconds - 1000); //milliseconds
       });
     });
-
 
     test('State transitions from round to break', () {
       FakeAsync().run((async) {
@@ -94,16 +88,12 @@ void main() {
 
         viewModel.start();
 
-        // Simulate each timer tick
         async.elapse(settings.roundDuration);
-        async.flushTimers();
 
-        // Verify the state transitions to break
         expect(viewModel.state.isBreak, true);
         expect(viewModel.state.remainingTime, settings.breakDuration.inMilliseconds);
       });
     });
-
 
     test('Timer finishes after all rounds', () {
       FakeAsync().run((async) {
@@ -118,8 +108,8 @@ void main() {
 
         viewModel.start();
 
-        final totalDuration = (settings.roundDuration + settings.breakDuration) *
-            settings.roundCount;
+        final totalDuration =
+            (settings.roundDuration + settings.breakDuration) * settings.roundCount;
         async.elapse(totalDuration);
 
         async.flushTimers();
@@ -127,6 +117,5 @@ void main() {
         expect(viewModel.state.isFinished, true);
       });
     });
-
   });
 }

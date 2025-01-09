@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:muay_time/viewmodel/timer_viewmodel.dart';
-import 'package:muay_time/widgets/inputs.dart';
 import 'timer_running_screen.dart';
+import '../widgets/inputs.dart';
 
-class TimerScreen extends ConsumerWidget {
-  const TimerScreen({super.key});
+class TimerSettings extends ConsumerWidget {
+  const TimerSettings({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final timerSettings = ref.watch(timerViewModelProvider);
-
+final trigger = ref.watch(timerViewModelProvider.notifier);
     return Scaffold(
       appBar: AppBar(title: const Text('Fight Timer')),
       body: Padding(
@@ -27,28 +27,26 @@ class TimerScreen extends ConsumerWidget {
               label: 'Number of Rounds',
               value: timerSettings.roundCount,
               onChanged: (value) =>
-                  ref.read(timerViewModelProvider.notifier).updateRounds(value),
+                  trigger.updateRounds(value),
             ),
             DurationInput(
               label: 'Round Duration (seconds)',
               value: timerSettings.roundDuration.inSeconds,
-              onChanged: (value) => ref
-                  .read(timerViewModelProvider.notifier)
-                  .updateRoundDuration(Duration(seconds: value)),
+              onChanged: (value) => trigger.updateRoundDuration(Duration(seconds: value)),
             ),
             DurationInput(
               label: 'Break Duration (seconds)',
               value: timerSettings.breakDuration.inSeconds,
-              onChanged: (value) => ref
-                  .read(timerViewModelProvider.notifier)
-                  .updateBreakDuration(Duration(seconds: value)),
+              onChanged: (value) => trigger.updateBreakDuration(Duration(seconds: value)),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const TimerRunningScreen(),
+                  builder: (context) => TimerRunningScreen(
+                    settings: timerSettings,
+                  ),
                 ),
               ),
               child: const Text('Start Timer'),

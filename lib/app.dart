@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:muay_time/view/timer_screen.dart';
+import 'package:muay_time/view/timer_settings_screen.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const TimerScreen(),
+      home: const TimerSettings(),
     );
   }
 }

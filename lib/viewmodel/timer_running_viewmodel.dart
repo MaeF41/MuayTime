@@ -1,12 +1,18 @@
 import 'dart:async';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:muay_time/viewmodel/timer_viewmodel.dart';
+import 'package:muay_time/model/timer_setting.dart';
+
+typedef Ticker = Timer Function(Duration duration, void Function(Timer) callback);
 
 final timerRunningViewModelProvider =
-StateNotifierProvider<TimerRunningViewModel, TimerRunningState>((ref) {
-  return TimerRunningViewModel(ref);
-});
+StateNotifierProvider.autoDispose.family<TimerRunningViewModel, TimerRunningState, TimerSettings>(
+      (ref, settings) {
+    return TimerRunningViewModel(
+      settings,
+      ticker: (duration, callback) => Timer.periodic(duration, callback),
+    );
+  },
+);
 
 class TimerRunningState {
   final int currentRound;
@@ -20,12 +26,6 @@ class TimerRunningState {
     required this.isBreak,
     required this.isFinished,
   });
-
-  TimerRunningState.initial()
-      : currentRound = 1,
-        remainingTime = 0,
-        isBreak = false,
-        isFinished = false;
 
   TimerRunningState copyWith({
     int? currentRound,
@@ -44,26 +44,25 @@ class TimerRunningState {
 
 class TimerRunningViewModel extends StateNotifier<TimerRunningState> {
   Timer? _timer;
-  final Ref ref;
+  final TimerSettings settings;
+  final Ticker ticker;
 
-  TimerRunningViewModel(this.ref) : super(TimerRunningState.initial());
+  TimerRunningViewModel(this.settings, {required this.ticker})
+      : super(TimerRunningState(
+    currentRound: 1,
+    remainingTime: settings.roundDuration.inSeconds,
+    isBreak: false,
+    isFinished: false,
+  ));
+
 
   void start() {
-    final settings = ref.read(timerViewModelProvider);
-    _initializePhase(settings.roundDuration.inSeconds, isBreak: false);
-  }
-
-  void _initializePhase(int duration, {required bool isBreak}) {
-    state = state.copyWith(
-      remainingTime: duration,
-      isBreak: isBreak,
-    );
     _startCountdown();
   }
 
   void _startCountdown() {
     _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    _timer = ticker(const Duration(seconds: 1), (timer) {
       if (state.remainingTime > 0) {
         state = state.copyWith(remainingTime: state.remainingTime - 1);
       } else {
@@ -74,17 +73,23 @@ class TimerRunningViewModel extends StateNotifier<TimerRunningState> {
   }
 
   void _transitionToNextPhase() {
-    final settings = ref.read(timerViewModelProvider);
-
     if (state.isBreak) {
       if (state.currentRound < settings.roundCount) {
-        state = state.copyWith(currentRound: state.currentRound + 1);
-        _initializePhase(settings.roundDuration.inSeconds, isBreak: false);
+        state = state.copyWith(
+          currentRound: state.currentRound + 1,
+          remainingTime: settings.roundDuration.inSeconds,
+          isBreak: false,
+        );
+        _startCountdown();
       } else {
         _finishTimer();
       }
     } else {
-      _initializePhase(settings.breakDuration.inSeconds, isBreak: true);
+      state = state.copyWith(
+        remainingTime: settings.breakDuration.inSeconds,
+        isBreak: true,
+      );
+      _startCountdown();
     }
   }
 

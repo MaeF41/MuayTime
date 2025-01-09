@@ -7,8 +7,7 @@ flutter test --coverage
 lcov --remove coverage/lcov.info  -o coverage/new_lcov.info
 genhtml coverage/new_lcov.info -o coverage/html --config-file coverage.config
 
-genhtml coverage/new_lcov.info -o coverage/html | \
-    grep "lines\.*:" | dart run coverage_check.dart 100.0
+
 
 # Conditionally open only if running locally (not on CI)
 if [ -z "$CI" ]; then
@@ -17,3 +16,6 @@ if [ -z "$CI" ]; then
   # or on Ubuntu with a desktop environment:
   # xdg-open coverage/html/index.html
 fi
+
+genhtml coverage/new_lcov.info -o coverage/html | \
+    grep "lines\.*:" | dart run coverage_check.dart 100.0

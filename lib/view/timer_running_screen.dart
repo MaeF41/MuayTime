@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:muay_time/model/timer_setting.dart';
 import 'package:muay_time/viewmodel/timer_running_viewmodel.dart';
 
 class TimerRunningScreen extends ConsumerWidget {
-  const TimerRunningScreen({super.key});
+  final TimerSettings settings;
+
+  const TimerRunningScreen({super.key, required this.settings});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final timerState = ref.watch(timerRunningViewModelProvider);
-    final timerViewModel = ref.read(timerRunningViewModelProvider.notifier);
+    final timerState = ref.watch(timerRunningViewModelProvider(settings));
+    final timerViewModel = ref.read(timerRunningViewModelProvider(settings).notifier);
+
+    if (!timerState.isFinished && timerState.remainingTime != 0) {
+      timerViewModel.start();
+    }
 
     return Scaffold(
       appBar: AppBar(

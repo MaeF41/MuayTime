@@ -1,24 +1,53 @@
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:muay_time/screen/main_screen.dart';
+import 'package:muay_time/screen/timer_screen.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('TimerScreen renders correctly', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(home: TimerScreen()),
+      ),
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    expect(find.text('Number of Rounds'), findsOneWidget);
+    expect(find.text('Round Duration (seconds)'), findsOneWidget);
+    expect(find.text('Break Duration (seconds)'), findsOneWidget);
+    expect(find.text('3'), findsOneWidget); // Default round count
+   //? expect(find.text('180 s'), findsNothing); // This depends on the text widget implementation
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+  testWidgets('Updates round count when + button is tapped', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(home: TimerScreen()),
+      ),
+    );
+
+    // Find the + button for the round count
+    final incrementButton = find.widgetWithIcon(IconButton, Icons.add).first;
+
+    await tester.tap(incrementButton);
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Verify the round count is updated
+    expect(find.text('4'), findsOneWidget);
+  });
+
+  testWidgets('Starts timer when Start Timer button is pressed', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(home: TimerScreen()),
+      ),
+    );
+
+    // Find and tap the Start Timer button
+    final startButton = find.text('Start Timer');
+    await tester.tap(startButton);
+    await tester.pumpAndSettle();
+
+    // Verify navigation to TimerRunningScreen
+    expect(find.text('Timer Running'), findsOneWidget);
   });
 }

@@ -2,7 +2,7 @@ name: 💪 100% test
 on: [push, workflow_dispatch]
 jobs:
   coverage:
-    runs-on: macos-latest-xlarge # ubuntu-latest causes more than a 1% diff in goldens
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
     - uses: actions/checkout@v3

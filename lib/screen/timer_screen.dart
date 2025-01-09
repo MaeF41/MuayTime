@@ -49,7 +49,6 @@ class TimerScreen extends ConsumerWidget {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // TODO: Spusti časovač
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => TimerRunningScreen()),

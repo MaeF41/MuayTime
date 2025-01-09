@@ -1,0 +1,13 @@
+name: lint
+on: [push, workflow_dispatch]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@v3
+    - uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.27.1'
+    - run: flutter analyze
+    - run: sh check_code_gen.sh

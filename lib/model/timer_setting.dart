@@ -9,16 +9,15 @@ class TimerSettings {
     required this.breakDuration,
   });
 
-/// prep for hive
-  // Map<String, dynamic> toJson() => {
-  //   'roundCount': roundCount,
-  //   'roundDuration': roundDuration.inSeconds,
-  //   'breakDuration': breakDuration.inSeconds,
-  // };
-  //
-  // factory TimerSettings.fromJson(Map<String, dynamic> json) => TimerSettings(
-  //   roundCount: json['roundCount'],
-  //   roundDuration: Duration(seconds: json['roundDuration']),
-  //   breakDuration: Duration(seconds: json['breakDuration']),
-  // );
+  TimerSettings copyWith({
+    int? roundCount,
+    Duration? roundDuration,
+    Duration? breakDuration,
+  }) {
+    return TimerSettings(
+      roundCount: roundCount ?? this.roundCount,
+      roundDuration: roundDuration ?? this.roundDuration,
+      breakDuration: breakDuration ?? this.breakDuration,
+    );
+  }
 }

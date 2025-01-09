@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:muay_time/screen/timer_screen.dart';
+import 'package:muay_time/view/timer_screen.dart';
 
 void main() {
   testWidgets('TimerScreen renders correctly', (WidgetTester tester) async {

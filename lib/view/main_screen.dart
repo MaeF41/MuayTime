@@ -1,6 +1,5 @@
-
 import 'package:flutter/material.dart';
-import 'package:muay_time/screen/timer_screen.dart';
+import 'package:muay_time/view/timer_screen.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:muay_time/screen/main_screen.dart';
+import 'package:muay_time/view/main_screen.dart';
 
 import 'harness.dart';
 

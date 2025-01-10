@@ -17,7 +17,6 @@ class TimerRunningScreenState extends ConsumerState<TimerRunningScreen> {
   void initState() {
     super.initState();
 
-    // Start the timer when the screen is initialized
     final timerViewModel =
     ref.read(timerRunningViewModelProvider(widget.settings).notifier);
     timerViewModel.start();
@@ -58,11 +57,18 @@ class TimerRunningScreenState extends ConsumerState<TimerRunningScreen> {
                   : 'Round ${timerState.currentRound}',
               style: const TextStyle(fontSize: 24),
             ),
-            Text(
-              timerState.formattedTime,
-              style: const TextStyle(
-                fontSize: 48,
-                fontWeight: FontWeight.bold,
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: SizedBox(
+                width: 234,
+                child: Text(
+                  textAlign: TextAlign.start,
+                  timerState.formattedTime,
+                  style: const TextStyle(
+                    fontSize: 48,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 20),

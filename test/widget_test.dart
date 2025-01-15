@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:muay_time/view/timer_settings_screen.dart';
+import 'package:muay_time/widgets/inputs.dart';
 
 void main() {
   testWidgets('TimerScreenSettings renders correctly', (WidgetTester tester) async {
@@ -86,5 +87,165 @@ void main() {
     await tester.pump(Duration(milliseconds: 300));
 
     expect(find.text('Round 1'), findsOneWidget);
+  });
+
+  group('NumberInput Widget Tests', () {
+    testWidgets('Displays label and value correctly', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: NumberInput(
+            label: 'Quantity',
+            value: 5,
+            onChanged: (_) {},
+          ),
+        ),
+      );
+
+      expect(find.text('Quantity'), findsOneWidget);
+      expect(find.text('5'), findsOneWidget);
+    });
+
+    testWidgets('Increment button increases the value', (WidgetTester tester) async {
+      int currentValue = 5;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: NumberInput(
+            label: 'Quantity',
+            value: currentValue,
+            onChanged: (newValue) {
+              currentValue = newValue;
+            },
+          ),
+        ),
+      );
+
+      await tester.tap(find.byIcon(Icons.add));
+      await tester.pump();
+
+      expect(currentValue, 6);
+    });
+
+    testWidgets('Decrement button decreases the value', (WidgetTester tester) async {
+      int currentValue = 5;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: NumberInput(
+            label: 'Quantity',
+            value: currentValue,
+            onChanged: (newValue) {
+              currentValue = newValue;
+            },
+          ),
+        ),
+      );
+
+      await tester.tap(find.byIcon(Icons.remove));
+      await tester.pump();
+
+      expect(currentValue, 4);
+    });
+
+    testWidgets('Decrement button does not decrease below 1', (WidgetTester tester) async {
+      int currentValue = 1;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: NumberInput(
+            label: 'Quantity',
+            value: currentValue,
+            onChanged: (newValue) {
+              currentValue = newValue;
+            },
+          ),
+        ),
+      );
+
+      await tester.tap(find.byIcon(Icons.remove));
+      await tester.pump();
+
+      expect(currentValue, 1);
+    });
+  });
+
+  group('DurationInput Widget Tests', () {
+    testWidgets('Displays label and value correctly', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: DurationInput(
+            label: 'Timer',
+            value: 30,
+            onChanged: (_) {},
+          ),
+        ),
+      );
+
+      expect(find.text('Timer'), findsOneWidget);
+      expect(find.text('30 s'), findsOneWidget);
+    });
+
+    testWidgets('Increment button increases the value by 10', (WidgetTester tester) async {
+      int currentValue = 30;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: DurationInput(
+            label: 'Timer',
+            value: currentValue,
+            onChanged: (newValue) {
+              currentValue = newValue;
+            },
+          ),
+        ),
+      );
+
+      await tester.tap(find.byIcon(Icons.add));
+      await tester.pump();
+
+      expect(currentValue, 40);
+    });
+
+    testWidgets('Decrement button decreases the value by 10', (WidgetTester tester) async {
+      int currentValue = 30;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: DurationInput(
+            label: 'Timer',
+            value: currentValue,
+            onChanged: (newValue) {
+              currentValue = newValue;
+            },
+          ),
+        ),
+      );
+
+      await tester.tap(find.byIcon(Icons.remove));
+      await tester.pump();
+
+      expect(currentValue, 20);
+    });
+
+    testWidgets('Decrement button does not decrease below 10', (WidgetTester tester) async {
+      int currentValue = 10;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: DurationInput(
+            label: 'Timer',
+            value: currentValue,
+            onChanged: (newValue) {
+              currentValue = newValue;
+            },
+          ),
+        ),
+      );
+
+      await tester.tap(find.byIcon(Icons.remove));
+      await tester.pump();
+
+      expect(currentValue, 10);
+    });
   });
 }

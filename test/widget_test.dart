@@ -7,7 +7,7 @@ void main() {
   testWidgets('TimerScreenSettings renders correctly', (WidgetTester tester) async {
     await tester.pumpWidget(
       ProviderScope(
-        child: MaterialApp(home: TimerSettingsScreen()),
+        child: MaterialApp(home: SettingsScreen()),
       ),
     );
 
@@ -20,7 +20,7 @@ void main() {
   testWidgets('Updates round count when + button is tapped', (WidgetTester tester) async {
     await tester.pumpWidget(
       ProviderScope(
-        child: MaterialApp(home: TimerSettingsScreen()),
+        child: MaterialApp(home: SettingsScreen()),
       ),
     );
     expect(find.text('3'), findsOneWidget);
@@ -38,7 +38,7 @@ void main() {
   testWidgets('Updates round duration when + tapped', (WidgetTester tester) async {
     await tester.pumpWidget(
       ProviderScope(
-        child: MaterialApp(home: TimerSettingsScreen()),
+        child: MaterialApp(home: SettingsScreen()),
       ),
     );
 
@@ -57,7 +57,7 @@ void main() {
   testWidgets('Updates break duration when + tapped', (WidgetTester tester) async {
     await tester.pumpWidget(
       ProviderScope(
-        child: MaterialApp(home: TimerSettingsScreen()),
+        child: MaterialApp(home: SettingsScreen()),
       ),
     );
 
@@ -76,7 +76,7 @@ void main() {
   testWidgets('Starts timer when Start Timer button is pressed', (WidgetTester tester) async {
     await tester.pumpWidget(
       ProviderScope(
-        child: MaterialApp(home: TimerSettingsScreen()),
+        child: MaterialApp(home: SettingsScreen()),
       ),
     );
 

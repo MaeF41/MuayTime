@@ -4,8 +4,8 @@ import 'package:muay_time/viewmodel/timer_viewmodel.dart';
 import 'timer_running_screen.dart';
 import '../widgets/inputs.dart';
 
-class TimerSettingsScreen extends ConsumerWidget {
-  const TimerSettingsScreen({super.key});
+class SettingsScreen extends ConsumerWidget {
+  const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

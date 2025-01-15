@@ -91,7 +91,7 @@ class TimerRunningScreenState extends ConsumerState<TimerRunningScreen> {
                             PageRouteBuilder(
                               transitionDuration: const Duration(milliseconds: 200),
                               pageBuilder: (_, __, ___) {
-                                return TimerSettingsScreen();
+                                return SettingsScreen();
                               },
                               transitionsBuilder: (_, animation, __, child) {
                                 return SlideTransition(

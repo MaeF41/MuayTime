@@ -71,13 +71,13 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
     await tester.pump(const Duration(seconds: 1));
 
-    expect(find.byType(TimerSettingsScreen), findsNothing);
+    expect(find.byType(SettingsScreen), findsNothing);
     expect(find.text('Round 1'), findsOneWidget);
 
     await tester.tap(find.text('Stop'));
     await tester.pumpAndSettle();
 
-    expect(find.byType(TimerSettingsScreen), findsOneWidget);
+    expect(find.byType(SettingsScreen), findsOneWidget);
     expect(find.text('Round 1'), findsNothing);
   });
 }

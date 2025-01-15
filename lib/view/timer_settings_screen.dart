@@ -4,13 +4,13 @@ import 'package:muay_time/viewmodel/timer_viewmodel.dart';
 import 'timer_running_screen.dart';
 import '../widgets/inputs.dart';
 
-class TimerSettings extends ConsumerWidget {
-  const TimerSettings({super.key});
+class TimerSettingsScreen extends ConsumerWidget {
+  const TimerSettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final timerSettings = ref.watch(timerViewModelProvider);
-final trigger = ref.watch(timerViewModelProvider.notifier);
+    final trigger = ref.watch(timerViewModelProvider.notifier);
     return Scaffold(
       appBar: AppBar(title: const Text('Fight Timer')),
       body: Padding(
@@ -26,8 +26,7 @@ final trigger = ref.watch(timerViewModelProvider.notifier);
             NumberInput(
               label: 'Number of Rounds',
               value: timerSettings.roundCount,
-              onChanged: (value) =>
-                  trigger.updateRounds(value),
+              onChanged: (value) => trigger.updateRounds(value),
             ),
             DurationInput(
               label: 'Round Duration (seconds)',
@@ -41,12 +40,10 @@ final trigger = ref.watch(timerViewModelProvider.notifier);
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () => Navigator.push(
+              onPressed: () => Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => TimerRunningScreen(
-                    settings: timerSettings,
-                  ),
+                  builder: (context) => TimerRunningScreen(settings: timerSettings),
                 ),
               ),
               child: const Text('Start Timer'),

@@ -29,6 +29,7 @@ void main() {
       final state = container.read(timerRunningViewModelProvider(settings));
 
       expect(state.currentRound, 1);
+      expect(settings.roundCount, 3);
       expect(state.remainingTime, settings.roundDuration.inMilliseconds);
       expect(state.isBreak, false);
       expect(state.isFinished, false);

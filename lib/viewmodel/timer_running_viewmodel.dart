@@ -49,7 +49,6 @@ class TimerRunningState {
     return '$minutes:$seconds:$milliseconds';
   }
 }
-
 class TimerRunningViewModel extends StateNotifier<TimerRunningState> {
   Timer? _timer;
   final TimerSettings settings;
@@ -65,7 +64,7 @@ class TimerRunningViewModel extends StateNotifier<TimerRunningState> {
   ));
 
   void start() {
-    elapsedTicks = 0;
+    elapsedTicks = 0; // Reset ticks at the start of the timer
     _startCountdown();
   }
 
@@ -73,8 +72,11 @@ class TimerRunningViewModel extends StateNotifier<TimerRunningState> {
     _timer?.cancel();
     _timer = ticker(const Duration(milliseconds: 10), (timer) {
       elapsedTicks += 1;
+      final totalDuration = state.isBreak
+          ? settings.breakDuration.inMilliseconds
+          : settings.roundDuration.inMilliseconds;
       final elapsedTime = elapsedTicks * 10; // Total elapsed time in ms
-      final remaining = settings.roundDuration.inMilliseconds - elapsedTime;
+      final remaining = totalDuration - elapsedTime;
 
       if (remaining > 0) {
         state = state.copyWith(remainingTime: remaining);
@@ -86,6 +88,8 @@ class TimerRunningViewModel extends StateNotifier<TimerRunningState> {
   }
 
   void _transitionToNextPhase() {
+    elapsedTicks = 0; // Reset ticks when transitioning phases
+
     if (state.isBreak) {
       if (state.currentRound < settings.roundCount) {
         state = state.copyWith(

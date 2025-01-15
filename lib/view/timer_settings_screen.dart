@@ -12,16 +12,19 @@ class SettingsScreen extends ConsumerWidget {
     final timerSettings = ref.watch(timerViewModelProvider);
     final trigger = ref.watch(timerViewModelProvider.notifier);
     return Scaffold(
-      appBar: AppBar(title: const Text('Fight Timer')),
+      appBar: AppBar(
+        title: const Text(
+          textAlign: TextAlign.center,
+          'Set Timer Settings',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const Text(
-              'Set Timer Settings',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
             const SizedBox(height: 20),
             NumberInput(
               label: 'Number of Rounds',

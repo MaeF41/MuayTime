@@ -15,10 +15,10 @@ class NumberInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label, style: const TextStyle(fontSize: 16)),
         Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             IconButton(
               icon: const Icon(Icons.remove),
@@ -51,10 +51,10 @@ class DurationInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label, style: const TextStyle(fontSize: 16)),
         Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             IconButton(
               icon: const Icon(Icons.remove),

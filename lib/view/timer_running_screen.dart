@@ -55,9 +55,7 @@ class TimerRunningScreenState extends ConsumerState<TimerRunningScreen> {
                       ),
                       const SizedBox(height: 20),
                       ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
+                        onPressed: () => pushReplaceToSettingsScreen(context),
                         child: const Text('Back to Settings'),
                       ),
                     ],
@@ -86,24 +84,7 @@ class TimerRunningScreenState extends ConsumerState<TimerRunningScreen> {
                           final timerViewModel =
                               ref.read(timerRunningViewModelProvider(widget.settings).notifier);
                           timerViewModel.stopTimer();
-                          Navigator.pushReplacement(
-                            context,
-                            PageRouteBuilder(
-                              transitionDuration: const Duration(milliseconds: 200),
-                              pageBuilder: (_, __, ___) {
-                                return SettingsScreen();
-                              },
-                              transitionsBuilder: (_, animation, __, child) {
-                                return SlideTransition(
-                                  position: Tween<Offset>(
-                                    begin: const Offset(1, 0),
-                                    end: Offset.zero,
-                                  ).animate(animation),
-                                  child: child,
-                                );
-                              },
-                            ),
-                          );
+                          pushReplaceToSettingsScreen(context);
                         },
                         child: const Text('Stop'),
                       ),
@@ -111,6 +92,27 @@ class TimerRunningScreenState extends ConsumerState<TimerRunningScreen> {
                   ),
           ),
         ],
+      ),
+    );
+  }
+
+  Future<dynamic> pushReplaceToSettingsScreen(BuildContext context) {
+    return Navigator.pushReplacement(
+      context,
+      PageRouteBuilder(
+        transitionDuration: const Duration(milliseconds: 200),
+        pageBuilder: (_, __, ___) {
+          return SettingsScreen();
+        },
+        transitionsBuilder: (_, animation, __, child) {
+          return SlideTransition(
+            position: Tween(
+              begin: const Offset(-1, 0),
+              end: Offset.zero,
+            ).animate(animation),
+            child: child,
+          );
+        },
       ),
     );
   }

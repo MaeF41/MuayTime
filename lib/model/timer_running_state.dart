@@ -5,12 +5,14 @@ class TimerRunningState {
   final int currentRound;
   final int remainingTime; // In milliseconds
   final bool isBreak;
+  final bool isPaused;
   final bool isFinished;
 
   TimerRunningState({
     required this.currentRound,
     required this.remainingTime,
     required this.isBreak,
+    required this.isPaused,
     required this.isFinished,
   });
 
@@ -18,12 +20,14 @@ class TimerRunningState {
     int? currentRound,
     int? remainingTime,
     bool? isBreak,
+    bool? isPaused,
     bool? isFinished,
   }) {
     return TimerRunningState(
       currentRound: currentRound ?? this.currentRound,
       remainingTime: remainingTime ?? this.remainingTime,
       isBreak: isBreak ?? this.isBreak,
+      isPaused: isPaused ?? this.isPaused,
       isFinished: isFinished ?? this.isFinished,
     );
   }

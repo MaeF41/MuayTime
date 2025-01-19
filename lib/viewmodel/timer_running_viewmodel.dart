@@ -25,11 +25,17 @@ class TimerRunningViewModel extends StateNotifier<TimerRunningState> {
           currentRound: 1,
           remainingTime: settings.roundDuration.inMilliseconds,
           isBreak: false,
+          isPaused: false,
           isFinished: false,
         ));
 
-  void start() {
+  void start() { // this call is called on TimerRunningScreen init
     _startCountdown();
+  }
+
+  void continueTimer() {
+    _startCountdown();
+    state = state.copyWith(isPaused: false);
   }
 
   void _startCountdown() {
@@ -75,6 +81,7 @@ class TimerRunningViewModel extends StateNotifier<TimerRunningState> {
 
   void stopTimer() {
     _timer?.cancel();
+    state = state.copyWith(isPaused: true);
   }
 
   @override

@@ -25,7 +25,7 @@ Future<void> loadFonts() async {
 
   final fontLoader = FontLoader(fontFamily);
 
-  final file = File('test/test_assets/SFMono.ttf');
+  final file = File('assets/fonts/SFMono.ttf');
   final fontBytes = file.readAsBytesSync();
   final byteData = ByteData.sublistView(fontBytes);
   fontLoader.addFont(Future.value(byteData));

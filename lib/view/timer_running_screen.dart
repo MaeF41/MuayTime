@@ -71,23 +71,28 @@ class TimerRunningScreenState extends ConsumerState<TimerRunningScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            Text(
-                              timerState.isBreak
-                                  ? 'Break Time'
-                                  : 'Round ${timerState.currentRound} of ${widget.settings.roundCount}',
-                              style: const TextStyle(fontSize: 24),
-                            ),
                             SizedBox(
-                              width: 234,
+                              height: 48,
+                            ),
+                            SafeArea(
                               child: Text(
-                                textAlign: TextAlign.center,
-                                timerState.formattedTime,
-                                style: const TextStyle(
-                                  fontSize: 48,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                timerState.isBreak
+                                    ? 'Break Time'
+                                    : 'Round ${timerState.currentRound} of ${widget.settings.roundCount}',
+                                style: const TextStyle(fontSize: 24),
                               ),
                             ),
+                            Spacer(),
+                            Text(
+                              timerState.formattedTime,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 48,
+                                fontFamily: 'SF Pro',
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+
                           ],
                         ),
                       ),

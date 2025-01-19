@@ -1,3 +1,6 @@
+///
+/// Represents static configuration data for the timer
+///
 class TimerSettings {
   final int roundCount;
   final Duration roundDuration;

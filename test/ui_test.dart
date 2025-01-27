@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:muay_time/app.dart';
 import 'package:muay_time/view/timer_running_screen.dart';
@@ -134,16 +134,12 @@ void main() {
 
     final roundDuration = const Duration(seconds: 3);
 
-    final fakeTimerViewModel = TimerViewModel();
-    fakeTimerViewModel.updateBreakDuration(const Duration(seconds: 6));
-    fakeTimerViewModel.updateRoundDuration(roundDuration);
-    fakeTimerViewModel.updateRounds(2);
+    final fakeTimerCubit = TimerCubit();
+    fakeTimerCubit.updateBreakDuration(const Duration(seconds: 6));
+    fakeTimerCubit.updateRoundDuration(roundDuration);
+    fakeTimerCubit.updateRounds(2);
 
-    await tester.pumpAppWithOverrides([
-      timerViewModelProvider.overrideWith(
-        (ref) => fakeTimerViewModel, // Return a new instance of TimerViewModel here
-      ),
-    ]);
+    await tester.pumpAppWithOverrides(fakeTimerCubit);
 
     expect(find.text('2'), findsOneWidget);
 
@@ -168,16 +164,12 @@ void main() {
     await tester.binding.setSurfaceSize(iphone16ProLogicalSize);
     loadFonts();
 
-    final fakeTimerViewModel = TimerViewModel();
-    fakeTimerViewModel.updateBreakDuration(const Duration(seconds: 0));
-    fakeTimerViewModel.updateRoundDuration(const Duration(seconds: 0));
-    fakeTimerViewModel.updateRounds(1);
+    final fakeTimerCubit = TimerCubit();
+    fakeTimerCubit.updateBreakDuration(const Duration(seconds: 0));
+    fakeTimerCubit.updateRoundDuration(const Duration(seconds: 0));
+    fakeTimerCubit.updateRounds(1);
 
-    await tester.pumpAppWithOverrides([
-      timerViewModelProvider.overrideWith(
-        (ref) => fakeTimerViewModel, // Return a new instance of TimerViewModel here
-      ),
-    ]);
+    await tester.pumpAppWithOverrides(fakeTimerCubit);
 
     final startButton = find.text('Start Timer');
     await tester.tap(startButton);
@@ -201,13 +193,20 @@ void main() {
 }
 
 extension PumpsExt on WidgetTester {
-  Future<void> pumpApp() async => pumpWidget(const ProviderScope(child: MyApp()));
-
-  Future<void> pumpAppWithOverrides(List<Override> overrides) async {
+  Future<void> pumpApp() async {
     await pumpWidget(
-      ProviderScope(
-        overrides: overrides,
-        child: MyApp(),
+      BlocProvider(
+        create: (context) => TimerCubit(),
+        child: const MyApp(),
+      ),
+    );
+  }
+
+  Future<void> pumpAppWithOverrides(TimerCubit fakeCubit) async {
+    await pumpWidget(
+      BlocProvider(
+        create: (context) => fakeCubit,
+        child: const MyApp(),
       ),
     );
   }

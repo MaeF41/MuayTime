@@ -86,7 +86,7 @@ void main() {
     await tester.pump();
     await tester.pump(Duration(milliseconds: 300));
 
-    expect(find.text('Round 1'), findsOneWidget);
+    expect(find.text('Round 1 of 3'), findsOneWidget);
   });
 
   group('NumberInput Widget Tests', () {

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:muay_time/model/timer_running_state.dart';
 import 'package:muay_time/model/timer_setting.dart';
 import 'package:muay_time/view/timer_settings_screen.dart';
 import 'package:muay_time/viewmodel/timer_running_viewmodel.dart';
+import 'package:muay_time/widgets/haptic_text_button.dart';
 
 class TimerRunningScreen extends ConsumerStatefulWidget {
   final TimerSettings settings;
@@ -31,6 +33,8 @@ class TimerRunningScreenState extends ConsumerState<TimerRunningScreen> {
         : widget.settings.roundDuration.inMilliseconds;
 
     final progress = 1 - (timerState.remainingTime / totalDuration);
+
+    final timerViewModel = ref.read(timerRunningViewModelProvider(widget.settings).notifier);
 
     return Scaffold(
       body: Stack(
@@ -63,30 +67,53 @@ class TimerRunningScreenState extends ConsumerState<TimerRunningScreen> {
                 : Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        timerState.isBreak ? 'Break Time' : 'Round ${timerState.currentRound}',
-                        style: const TextStyle(fontSize: 24),
-                      ),
-                      SizedBox(
-                        width: 234,
-                        child: Text(
-                          textAlign: TextAlign.center,
-                          timerState.formattedTime,
-                          style: const TextStyle(
-                            fontSize: 48,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            SizedBox(
+                              height: 48,
+                            ),
+                            SafeArea(
+                              child: Text(
+                                timerState.isBreak
+                                    ? 'Break Time'
+                                    : 'Round ${timerState.currentRound} of ${widget.settings.roundCount}',
+                                style: const TextStyle(fontSize: 24),
+                              ),
+                            ),
+                            Spacer(),
+                            Text(
+                              timerState.formattedTime,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 48,
+                                fontFamily: 'SF Pro',
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      ElevatedButton(
-                        onPressed: () {
-                          final timerViewModel =
-                              ref.read(timerRunningViewModelProvider(widget.settings).notifier);
-                          timerViewModel.stopTimer();
-                          pushReplaceToSettingsScreen(context);
-                        },
-                        child: const Text('Stop'),
+                      const SizedBox(height: 60),
+                      Expanded(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Expanded(child: conditionalActionButton(timerState, timerViewModel)),
+                            Expanded(
+                              child: HapticTextButton(
+                                onTap: () {
+                                  timerViewModel.stopTimer();
+                                  pushReplaceToSettingsScreen(context);
+                                },
+                                child: const Text('Stop'),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -95,6 +122,18 @@ class TimerRunningScreenState extends ConsumerState<TimerRunningScreen> {
       ),
     );
   }
+
+  HapticTextButton conditionalActionButton(
+          TimerRunningState timerState, TimerRunningViewModel timerViewModel) =>
+      timerState.isPaused
+          ? HapticTextButton(
+              onTap: () => timerViewModel.continueTimer(),
+              child: const Text('Continue'),
+            )
+          : HapticTextButton(
+              onTap: () => timerViewModel.stopTimer(),
+              child: const Text('Pause'),
+            );
 
   Future<dynamic> pushReplaceToSettingsScreen(BuildContext context) {
     return Navigator.pushReplacement(

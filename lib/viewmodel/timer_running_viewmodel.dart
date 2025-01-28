@@ -49,11 +49,7 @@ class TimerRunningCubit extends Cubit<TimerRunningState> {
   }
 
   void _handleBreakPhase() {
-    if (_isLastRound()) {
-      _finishTimer();
-    } else {
       _startNextRound();
-    }
   }
 
   void _handleRoundPhase() {

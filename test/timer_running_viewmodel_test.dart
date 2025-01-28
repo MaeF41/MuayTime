@@ -5,8 +5,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:muay_time/model/timer_setting.dart';
 import 'package:muay_time/viewmodel/timer_running_viewmodel.dart';
 
+typedef Ticker = Timer Function(Duration duration, void Function(Timer) callback);
+
 void main() {
-  group('TimerRunningViewModel Tests', () {
+  group('TimerRunningCubit Tests', () {
     late TimerSettings settings;
 
     setUp(() {
@@ -18,7 +20,8 @@ void main() {
     });
 
     test('Initial state is correct', () {
-      fakeTicker(Duration duration, void Function(Timer) callback) => Timer.periodic(duration, (timer) => callback(timer));
+      fakeTicker(Duration duration, void Function(Timer) callback) =>
+          Timer.periodic(duration, (timer) => callback(timer));
       final cubit = TimerRunningCubit(settings, ticker: fakeTicker);
 
       final state = cubit.state;
@@ -26,28 +29,11 @@ void main() {
       expect(state.currentRound, 1);
       expect(state.remainingTime, settings.roundDuration.inMilliseconds);
       expect(state.isBreak, false);
+      expect(state.isPaused, false);
       expect(state.isFinished, false);
     });
 
-    test('Timer starts only once when the cubit is initialized', () {
-      FakeAsync().run((async) {
-        fakeTicker(Duration duration, void Function(Timer) callback) {
-          return Timer.periodic(duration, (timer) => callback(timer));
-        }
-
-        final cubit = TimerRunningCubit(settings, ticker: fakeTicker)..start();
-
-        expect(cubit.state.remainingTime, settings.roundDuration.inMilliseconds);
-
-        async.elapse(const Duration(milliseconds: 10));
-
-        expect(cubit.state.remainingTime, settings.roundDuration.inMilliseconds - 10);
-
-        async.elapse(const Duration(milliseconds: 20));
-      });
-    });
-
-    test('Start transitions to countdown state with FakeAsync', () {
+    test('Timer transitions from round to break phase', () {
       FakeAsync().run((async) {
         fakeTicker(Duration duration, void Function(Timer) callback) {
           return Timer.periodic(duration, (timer) => callback(timer));
@@ -56,12 +42,36 @@ void main() {
         final cubit = TimerRunningCubit(settings, ticker: fakeTicker);
 
         cubit.start();
-        async.elapse(const Duration(seconds: 1));
 
-        expect(
-          cubit.state.remainingTime,
-          settings.roundDuration.inMilliseconds - 1000, // milliseconds
-        );
+        async.elapse(settings.roundDuration);
+
+        final state = cubit.state;
+
+        expect(state.isBreak, true);
+        expect(state.currentRound, 1);
+        expect(state.remainingTime, settings.breakDuration.inMilliseconds);
+        expect(state.isFinished, false);
+      });
+    });
+
+    test('Timer transitions from break to next round', () {
+      FakeAsync().run((async) {
+        fakeTicker(Duration duration, void Function(Timer) callback) {
+          return Timer.periodic(duration, (timer) => callback(timer));
+        }
+
+        final cubit = TimerRunningCubit(settings, ticker: fakeTicker);
+
+        cubit.start();
+
+        async.elapse(settings.roundDuration + settings.breakDuration);
+
+        final state = cubit.state;
+
+        expect(state.isBreak, false);
+        expect(state.currentRound, 2);
+        expect(state.remainingTime, settings.roundDuration.inMilliseconds);
+        expect(state.isFinished, false);
       });
     });
 
@@ -75,14 +85,19 @@ void main() {
 
         cubit.start();
 
-        async.elapse(settings.roundDuration);
+        final totalDuration =
+            (settings.roundDuration + settings.breakDuration) * settings.roundCount;
+        async.elapse(totalDuration);
 
-        expect(cubit.state.isBreak, true);
-        expect(cubit.state.remainingTime, settings.breakDuration.inMilliseconds);
+        final state = cubit.state;
+
+        expect(state.isFinished, true);
+        expect(state.isBreak, false);
+        expect(state.currentRound, settings.roundCount);
       });
     });
 
-    test('Timer finishes after all rounds', () {
+    test('Timer pauses and resumes correctly', () {
       FakeAsync().run((async) {
         fakeTicker(Duration duration, void Function(Timer) callback) {
           return Timer.periodic(duration, (timer) => callback(timer));
@@ -92,13 +107,78 @@ void main() {
 
         cubit.start();
 
-        final totalDuration =
-            (settings.roundDuration + settings.breakDuration) * settings.roundCount;
-        async.elapse(totalDuration);
+        async.elapse(const Duration(seconds: 2));
 
-        async.flushTimers();
+        cubit.stopTimer();
 
-        expect(cubit.state.isFinished, true);
+        final pausedState = cubit.state;
+
+        expect(pausedState.isPaused, true);
+        expect(pausedState.remainingTime, settings.roundDuration.inMilliseconds - 2000);
+
+        cubit.continueTimer();
+
+        async.elapse(const Duration(seconds: 2));
+
+        final resumedState = cubit.state;
+
+        expect(resumedState.isPaused, false);
+        expect(resumedState.remainingTime, settings.roundDuration.inMilliseconds - 4000);
+      });
+    });
+
+    test('Timer handles stop and start correctly', () {
+      FakeAsync().run((async) {
+        fakeTicker(Duration duration, void Function(Timer) callback) {
+          return Timer.periodic(duration, (timer) => callback(timer));
+        }
+
+        final cubit = TimerRunningCubit(settings, ticker: fakeTicker);
+
+        cubit.start();
+
+        async.elapse(const Duration(seconds: 2));
+
+        cubit.stopTimer();
+
+        final stoppedState = cubit.state;
+
+        expect(stoppedState.isPaused, true);
+        expect(stoppedState.remainingTime, settings.roundDuration.inMilliseconds - 2000);
+
+        cubit.continueTimer();
+
+        async.elapse(const Duration(seconds: 3));
+
+        final resumedState = cubit.state;
+
+        expect(resumedState.isPaused, false);
+        expect(resumedState.remainingTime, settings.roundDuration.inMilliseconds - 5000);
+      });
+
+
+    });
+
+    test('Transitions correctly within the last round', () {
+      FakeAsync().run((async) {
+        fakeTicker(Duration duration, void Function(Timer) callback) {
+          return Timer.periodic(duration, (timer) => callback(timer));
+        }
+
+        final cubit = TimerRunningCubit(settings, ticker: fakeTicker);
+
+        cubit.start();
+
+        async.elapse(settings.roundDuration); // Round 1
+        async.elapse(settings.breakDuration); // Break 1
+        async.elapse(settings.roundDuration); // Round 2
+        async.elapse(settings.breakDuration); // Break 2
+        async.elapse(settings.roundDuration); // Last Round (No Break)
+
+        final state = cubit.state;
+
+        expect(state.isFinished, true);
+        expect(state.isBreak, false);
       });
     });
   });

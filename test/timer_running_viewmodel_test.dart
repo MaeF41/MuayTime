@@ -2,17 +2,14 @@ import 'dart:async';
 
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:riverpod/riverpod.dart';
 import 'package:muay_time/model/timer_setting.dart';
 import 'package:muay_time/viewmodel/timer_running_viewmodel.dart';
 
 void main() {
   group('TimerRunningViewModel Tests', () {
-    late ProviderContainer container;
     late TimerSettings settings;
 
     setUp(() {
-      container = ProviderContainer();
       settings = TimerSettings(
         roundCount: 3,
         roundDuration: const Duration(seconds: 10),
@@ -20,39 +17,31 @@ void main() {
       );
     });
 
-    tearDown(() {
-      container.dispose();
-    });
-
     test('Initial state is correct', () {
-      container.read(timerRunningViewModelProvider(settings).notifier);
-      final state = container.read(timerRunningViewModelProvider(settings));
+      fakeTicker(Duration duration, void Function(Timer) callback) => Timer.periodic(duration, (timer) => callback(timer));
+      final cubit = TimerRunningCubit(settings, ticker: fakeTicker);
+
+      final state = cubit.state;
 
       expect(state.currentRound, 1);
-      expect(settings.roundCount, 3);
       expect(state.remainingTime, settings.roundDuration.inMilliseconds);
       expect(state.isBreak, false);
       expect(state.isFinished, false);
     });
 
-    test('Timer starts only once when the screen initializes', () {
+    test('Timer starts only once when the cubit is initialized', () {
       FakeAsync().run((async) {
         fakeTicker(Duration duration, void Function(Timer) callback) {
           return Timer.periodic(duration, (timer) => callback(timer));
         }
 
-        final viewModel = TimerRunningViewModel(
-          settings,
-          ticker: fakeTicker,
-        );
+        final cubit = TimerRunningCubit(settings, ticker: fakeTicker)..start();
 
-        expect(viewModel.state.remainingTime, settings.roundDuration.inMilliseconds);
-
-        viewModel.start();
+        expect(cubit.state.remainingTime, settings.roundDuration.inMilliseconds);
 
         async.elapse(const Duration(milliseconds: 10));
 
-        expect(viewModel.state.remainingTime, settings.roundDuration.inMilliseconds - 10);
+        expect(cubit.state.remainingTime, settings.roundDuration.inMilliseconds - 10);
 
         async.elapse(const Duration(milliseconds: 20));
       });
@@ -64,15 +53,15 @@ void main() {
           return Timer.periodic(duration, (timer) => callback(timer));
         }
 
-        final viewModel = TimerRunningViewModel(
-          settings,
-          ticker: fakeTicker,
-        );
+        final cubit = TimerRunningCubit(settings, ticker: fakeTicker);
 
-        viewModel.start();
+        cubit.start();
         async.elapse(const Duration(seconds: 1));
-        expect(viewModel.state.remainingTime,
-            settings.roundDuration.inMilliseconds - 1000); //milliseconds
+
+        expect(
+          cubit.state.remainingTime,
+          settings.roundDuration.inMilliseconds - 1000, // milliseconds
+        );
       });
     });
 
@@ -82,17 +71,14 @@ void main() {
           return Timer.periodic(duration, (timer) => callback(timer));
         }
 
-        final viewModel = TimerRunningViewModel(
-          settings,
-          ticker: fakeTicker,
-        );
+        final cubit = TimerRunningCubit(settings, ticker: fakeTicker);
 
-        viewModel.start();
+        cubit.start();
 
         async.elapse(settings.roundDuration);
 
-        expect(viewModel.state.isBreak, true);
-        expect(viewModel.state.remainingTime, settings.breakDuration.inMilliseconds);
+        expect(cubit.state.isBreak, true);
+        expect(cubit.state.remainingTime, settings.breakDuration.inMilliseconds);
       });
     });
 
@@ -102,12 +88,9 @@ void main() {
           return Timer.periodic(duration, (timer) => callback(timer));
         }
 
-        final viewModel = TimerRunningViewModel(
-          settings,
-          ticker: fakeTicker,
-        );
+        final cubit = TimerRunningCubit(settings, ticker: fakeTicker);
 
-        viewModel.start();
+        cubit.start();
 
         final totalDuration =
             (settings.roundDuration + settings.breakDuration) * settings.roundCount;
@@ -115,7 +98,7 @@ void main() {
 
         async.flushTimers();
 
-        expect(viewModel.state.isFinished, true);
+        expect(cubit.state.isFinished, true);
       });
     });
   });

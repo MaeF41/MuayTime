@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:muay_time/app.dart';
+import 'package:muay_time/viewmodel/timer_viewmodel.dart';
 
 void main() {
-  runApp(ProviderScope(child: const MyApp()));
+  runApp(
+    BlocProvider(
+      create: (context) => TimerCubit(),
+      child: const MyApp(),
+    ),
+  );
 }

@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:muay_time/view/timer_settings_screen.dart';
+import 'package:muay_time/viewmodel/timer_viewmodel.dart';
 import 'package:muay_time/widgets/inputs.dart';
 
 void main() {
   testWidgets('TimerScreenSettings renders correctly', (WidgetTester tester) async {
     await tester.pumpWidget(
-      ProviderScope(
-        child: MaterialApp(home: SettingsScreen()),
+      BlocProvider(
+        create: (_) => TimerCubit(),
+        child: const MaterialApp(home: SettingsScreen()),
       ),
     );
 
@@ -20,10 +22,12 @@ void main() {
 
   testWidgets('Updates round count when + button is tapped', (WidgetTester tester) async {
     await tester.pumpWidget(
-      ProviderScope(
-        child: MaterialApp(home: SettingsScreen()),
+      BlocProvider(
+        create: (_) => TimerCubit(),
+        child: const MaterialApp(home: SettingsScreen()),
       ),
     );
+
     expect(find.text('3'), findsOneWidget);
     expect(find.text('4'), findsNothing);
 
@@ -38,8 +42,9 @@ void main() {
 
   testWidgets('Updates round duration when + tapped', (WidgetTester tester) async {
     await tester.pumpWidget(
-      ProviderScope(
-        child: MaterialApp(home: SettingsScreen()),
+      BlocProvider(
+        create: (_) => TimerCubit(),
+        child: const MaterialApp(home: SettingsScreen()),
       ),
     );
 
@@ -57,8 +62,9 @@ void main() {
 
   testWidgets('Updates break duration when + tapped', (WidgetTester tester) async {
     await tester.pumpWidget(
-      ProviderScope(
-        child: MaterialApp(home: SettingsScreen()),
+      BlocProvider(
+        create: (_) => TimerCubit(),
+        child: const MaterialApp(home: SettingsScreen()),
       ),
     );
 
@@ -76,15 +82,16 @@ void main() {
 
   testWidgets('Starts timer when Start Timer button is pressed', (WidgetTester tester) async {
     await tester.pumpWidget(
-      ProviderScope(
-        child: MaterialApp(home: SettingsScreen()),
+      BlocProvider(
+        create: (_) => TimerCubit(),
+        child: const MaterialApp(home: SettingsScreen()),
       ),
     );
 
     final startButton = find.text('Start Timer');
     await tester.tap(startButton);
     await tester.pump();
-    await tester.pump(Duration(milliseconds: 300));
+    await tester.pump(const Duration(milliseconds: 300));
 
     expect(find.text('Round 1 of 3'), findsOneWidget);
   });

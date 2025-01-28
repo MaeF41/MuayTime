@@ -13,18 +13,14 @@ class TimerRunningCubit extends Cubit<TimerRunningState> {
 
   TimerRunningCubit(this.settings, {required this.ticker})
       : super(TimerRunningState(
-    currentRound: 1,
-    remainingTime: settings.roundDuration.inMilliseconds,
-    isBreak: false,
-    isPaused: false,
-    isFinished: false,
-  ));
+          currentRound: 1,
+          remainingTime: settings.roundDuration.inMilliseconds,
+          isBreak: false,
+          isPaused: false,
+          isFinished: false,
+        ));
 
-  void start() {
-    _startCountdown();
-  }
-
-  void continueTimer() {
+  void startTimer() {
     _startCountdown();
     emit(state.copyWith(isPaused: false));
   }
@@ -46,23 +42,39 @@ class TimerRunningCubit extends Cubit<TimerRunningState> {
 
   void _transitionToNextPhase() {
     if (state.isBreak) {
-      if (state.currentRound < settings.roundCount) {
-        emit(state.copyWith(
-          currentRound: state.currentRound + 1,
-          remainingTime: settings.roundDuration.inMilliseconds,
-          isBreak: false,
-        ));
-        start();
-      } else {
-        _finishTimer();
-      }
+      _handleBreakPhase();
+    } else {
+      _handleRoundPhase();
+    }
+  }
+
+  void _handleBreakPhase() {
+      _startNextRound();
+  }
+
+  void _handleRoundPhase() {
+    if (_isLastRound()) {
+      _finishTimer();
     } else {
       emit(state.copyWith(
         remainingTime: settings.breakDuration.inMilliseconds,
         isBreak: true,
       ));
-      start();
+      startTimer();
     }
+  }
+
+  bool _isLastRound() {
+    return state.currentRound == settings.roundCount;
+  }
+
+  void _startNextRound() {
+    emit(state.copyWith(
+      currentRound: state.currentRound + 1,
+      remainingTime: settings.roundDuration.inMilliseconds,
+      isBreak: false,
+    ));
+    startTimer();
   }
 
   void _finishTimer() {

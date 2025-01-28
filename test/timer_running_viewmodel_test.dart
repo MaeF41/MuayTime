@@ -155,8 +155,6 @@ void main() {
         expect(resumedState.isPaused, false);
         expect(resumedState.remainingTime, settings.roundDuration.inMilliseconds - 5000);
       });
-
-
     });
 
     test('Transitions correctly within the last round', () {

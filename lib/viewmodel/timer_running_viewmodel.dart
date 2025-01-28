@@ -25,7 +25,6 @@ class TimerRunningCubit extends Cubit<TimerRunningState> {
     emit(state.copyWith(isPaused: false));
   }
 
-
   void _startCountdown() {
     _timer?.cancel(); // Cancel existing timer
 
@@ -68,7 +67,6 @@ class TimerRunningCubit extends Cubit<TimerRunningState> {
       startTimer();
     }
   }
-
 
   bool _isLastRound() {
     return state.currentRound == settings.roundCount;

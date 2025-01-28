@@ -19,7 +19,7 @@ class TimerRunningScreen extends StatelessWidget {
       create: (context) => TimerRunningCubit(
         settings,
         ticker: (duration, callback) => Timer.periodic(duration, callback),
-      )..start(),
+      )..startTimer(),
       child: BlocBuilder<TimerRunningCubit, TimerRunningState>(
         builder: (context, timerState) {
           final timerCubit = context.read<TimerRunningCubit>();
@@ -123,7 +123,7 @@ class TimerRunningScreen extends StatelessWidget {
       TimerRunningState timerState, TimerRunningCubit timerCubit) {
     return timerState.isPaused
         ? HapticTextButton(
-      onTap: () => timerCubit.continueTimer(),
+      onTap: () => timerCubit.startTimer(),
       child: const Text('Continue'),
     )
         : HapticTextButton(

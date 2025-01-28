@@ -20,14 +20,11 @@ class TimerRunningCubit extends Cubit<TimerRunningState> {
           isFinished: false,
         ));
 
-  void start() {
-    _startCountdown();
-  }
-
-  void continueTimer() {
+  void startTimer() {
     _startCountdown();
     emit(state.copyWith(isPaused: false));
   }
+
 
   void _startCountdown() {
     _timer?.cancel(); // Cancel existing timer
@@ -68,7 +65,7 @@ class TimerRunningCubit extends Cubit<TimerRunningState> {
         remainingTime: settings.breakDuration.inMilliseconds,
         isBreak: true,
       ));
-      continueTimer();
+      startTimer();
     }
   }
 
@@ -83,7 +80,7 @@ class TimerRunningCubit extends Cubit<TimerRunningState> {
       remainingTime: settings.roundDuration.inMilliseconds,
       isBreak: false,
     ));
-    continueTimer();
+    startTimer();
   }
 
   void _finishTimer() {

@@ -41,7 +41,7 @@ void main() {
 
         final cubit = TimerRunningCubit(settings, ticker: fakeTicker);
 
-        cubit.start();
+        cubit.startTimer();
 
         async.elapse(settings.roundDuration);
 
@@ -62,7 +62,7 @@ void main() {
 
         final cubit = TimerRunningCubit(settings, ticker: fakeTicker);
 
-        cubit.start();
+        cubit.startTimer();
 
         async.elapse(settings.roundDuration + settings.breakDuration);
 
@@ -83,7 +83,7 @@ void main() {
 
         final cubit = TimerRunningCubit(settings, ticker: fakeTicker);
 
-        cubit.start();
+        cubit.startTimer();
 
         final totalDuration =
             (settings.roundDuration + settings.breakDuration) * settings.roundCount;
@@ -105,7 +105,7 @@ void main() {
 
         final cubit = TimerRunningCubit(settings, ticker: fakeTicker);
 
-        cubit.start();
+        cubit.startTimer();
 
         async.elapse(const Duration(seconds: 2));
 
@@ -116,7 +116,7 @@ void main() {
         expect(pausedState.isPaused, true);
         expect(pausedState.remainingTime, settings.roundDuration.inMilliseconds - 2000);
 
-        cubit.continueTimer();
+        cubit.startTimer();
 
         async.elapse(const Duration(seconds: 2));
 
@@ -135,7 +135,7 @@ void main() {
 
         final cubit = TimerRunningCubit(settings, ticker: fakeTicker);
 
-        cubit.start();
+        cubit.startTimer();
 
         async.elapse(const Duration(seconds: 2));
 
@@ -146,7 +146,7 @@ void main() {
         expect(stoppedState.isPaused, true);
         expect(stoppedState.remainingTime, settings.roundDuration.inMilliseconds - 2000);
 
-        cubit.continueTimer();
+        cubit.startTimer();
 
         async.elapse(const Duration(seconds: 3));
 
@@ -167,7 +167,7 @@ void main() {
 
         final cubit = TimerRunningCubit(settings, ticker: fakeTicker);
 
-        cubit.start();
+        cubit.startTimer();
 
         async.elapse(settings.roundDuration); // Round 1
         async.elapse(settings.breakDuration); // Break 1

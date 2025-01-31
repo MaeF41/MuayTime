@@ -1,19 +1,28 @@
 import 'dart:async';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:muay_time/model/timer_running_state.dart';
 import 'package:muay_time/model/timer_setting.dart';
 
 typedef Ticker = Timer Function(Duration duration, void Function(Timer) callback);
 
+enum SoundTypeAsset {
+  shortBell("sound/bell-short.mp3"),
+  longBell("sound/bell.mp3");
+
+  final String dir;
+
+  const SoundTypeAsset(this.dir);
+}
+
 class TimerRunningCubit extends Cubit<TimerRunningState> {
   Timer? _timer;
   final TimerSettings settings;
   final Ticker ticker;
-  final _player = AudioPlayer();
+  final AudioPlayer player;
 
-  TimerRunningCubit(this.settings, {required this.ticker})
+  TimerRunningCubit(this.settings, {required this.ticker, required this.player})
       : super(TimerRunningState(
           currentRound: 1,
           remainingTime: settings.roundDuration.inMilliseconds,
@@ -22,15 +31,12 @@ class TimerRunningCubit extends Cubit<TimerRunningState> {
           isFinished: false,
         ));
 
-  _playSound({required bool short}) {
-    try {
-      short
-          ? _player.setAsset('assets/sound/bell-short.mp3')
-          : _player.setAsset('assets/sound/bell.mp3');
-      _player.play(); // Play the sound
-    } catch (e) {
-      print('Error playing sound: $e');
-    }
+  void _playSound(SoundTypeAsset type) {
+    final soundAsset = (type == SoundTypeAsset.shortBell)
+        ? SoundTypeAsset.shortBell.dir
+        : SoundTypeAsset.longBell.dir;
+
+    player.play(AssetSource(soundAsset)); // Use AssetSource here
   }
 
   void startTimer() {
@@ -54,7 +60,7 @@ class TimerRunningCubit extends Cubit<TimerRunningState> {
   }
 
   void _transitionToNextPhase() {
-    _playSound(short: true);
+    _playSound(SoundTypeAsset.shortBell);
     if (state.isBreak) {
       _handleBreakPhase();
     } else {
@@ -68,7 +74,7 @@ class TimerRunningCubit extends Cubit<TimerRunningState> {
 
   void _handleRoundPhase() {
     if (_isLastRound()) {
-      _playSound(short: true);
+      _playSound(SoundTypeAsset.shortBell);
       _finishTimer();
     } else {
       emit(state.copyWith(
@@ -94,7 +100,7 @@ class TimerRunningCubit extends Cubit<TimerRunningState> {
 
   void _finishTimer() {
     _timer?.cancel();
-    _playSound(short: false);
+    _playSound(SoundTypeAsset.longBell);
     emit(state.copyWith(isFinished: true));
   }
 

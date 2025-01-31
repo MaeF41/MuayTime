@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:muay_time/model/timer_running_state.dart';
@@ -11,13 +12,16 @@ import 'package:muay_time/widgets/haptic_text_button.dart';
 class TimerRunningScreen extends StatelessWidget {
   final TimerSettings settings;
 
-  const TimerRunningScreen({super.key, required this.settings});
+   TimerRunningScreen({super.key, required this.settings});
+
+  final audioPlayer= AudioPlayer();
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => TimerRunningCubit(
         settings,
+        player: audioPlayer,
         ticker: (duration, callback) => Timer.periodic(duration, callback),
       )..startTimer(),
       child: BlocBuilder<TimerRunningCubit, TimerRunningState>(

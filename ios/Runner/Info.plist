@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
     <key>NSMicrophoneUsageDescription</key>
-    <string>We need access to the microphone for audio playback.</string>
+    <string>This app uses the microphone for audio functionality</string>
     <key>NSAppTransportSecurity</key>
     <dict>
     <key>NSAllowsArbitraryLoads</key>

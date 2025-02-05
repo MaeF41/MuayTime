@@ -2,7 +2,7 @@
 
 BASE_HREF = /$(NAME)/
 # Replace with your GitHub username
-GITHUB_USER = bizz84
+GITHUB_USER = MaeF41
 GITHUB_REPO = https://github.com/$(GITHUB_USER)/$(NAME)
 BUILD_VERSION := $(if $(NAME),$(shell grep 'version:' $(NAME)/pubspec.yaml | awk '{print $$2}'))
 

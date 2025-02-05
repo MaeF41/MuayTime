@@ -32,12 +32,16 @@ class TimerRunningCubit extends Cubit<TimerRunningState> {
         ));
 
   void _playSound(SoundTypeAsset type) {
+    if (isTestEnvironment) return; // Skip playing sound in tests
+
     final soundAsset = (type == SoundTypeAsset.shortBell)
         ? SoundTypeAsset.shortBell.dir
         : SoundTypeAsset.longBell.dir;
 
-    player.play(AssetSource(soundAsset)); // Use AssetSource here
+    player.play(AssetSource(soundAsset));
   }
+
+  bool get isTestEnvironment => Zone.current[#isTest] == true;
 
   void startTimer() {
     _startCountdown();

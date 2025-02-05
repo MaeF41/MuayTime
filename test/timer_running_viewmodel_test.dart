@@ -1,14 +1,17 @@
 import 'dart:async';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:fake_async/fake_async.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:muay_time/model/timer_setting.dart';
 import 'package:muay_time/viewmodel/timer_running_viewmodel.dart';
 
+import 'mocks.dart';
+
 typedef Ticker = Timer Function(Duration duration, void Function(Timer) callback);
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   group('TimerRunningCubit Tests', () {
     late TimerSettings settings;
 
@@ -21,17 +24,19 @@ void main() {
     });
 
     test('Initial state is correct', () {
-      fakeTicker(Duration duration, void Function(Timer) callback) =>
-          Timer.periodic(duration, (timer) => callback(timer));
-      final cubit = TimerRunningCubit(settings, ticker: fakeTicker, player: AudioPlayer());
+      FakeAsync().run((async) {
+        fakeTicker(Duration duration, void Function(Timer) callback) =>
+            Timer.periodic(duration, (timer) => callback(timer));
+        final cubit = TimerRunningCubit(settings, ticker: fakeTicker, player: FakeAudioPlayer());
 
-      final state = cubit.state;
+        final state = cubit.state;
 
-      expect(state.currentRound, 1);
-      expect(state.remainingTime, settings.roundDuration.inMilliseconds);
-      expect(state.isBreak, false);
-      expect(state.isPaused, false);
-      expect(state.isFinished, false);
+        expect(state.currentRound, 1);
+        expect(state.remainingTime, settings.roundDuration.inMilliseconds);
+        expect(state.isBreak, false);
+        expect(state.isPaused, false);
+        expect(state.isFinished, false);
+      });
     });
 
     test('Timer transitions from round to break phase', () {
@@ -40,7 +45,7 @@ void main() {
           return Timer.periodic(duration, (timer) => callback(timer));
         }
 
-        final cubit = TimerRunningCubit(settings, ticker: fakeTicker, player: AudioPlayer());
+        final cubit = TimerRunningCubit(settings, ticker: fakeTicker, player: FakeAudioPlayer());
 
         cubit.startTimer();
 
@@ -61,7 +66,7 @@ void main() {
           return Timer.periodic(duration, (timer) => callback(timer));
         }
 
-        final cubit = TimerRunningCubit(settings, ticker: fakeTicker, player: AudioPlayer());
+        final cubit = TimerRunningCubit(settings, ticker: fakeTicker, player: FakeAudioPlayer());
 
         cubit.startTimer();
 
@@ -82,7 +87,7 @@ void main() {
           return Timer.periodic(duration, (timer) => callback(timer));
         }
 
-        final cubit = TimerRunningCubit(settings, ticker: fakeTicker, player: AudioPlayer());
+        final cubit = TimerRunningCubit(settings, ticker: fakeTicker, player: FakeAudioPlayer());
 
         cubit.startTimer();
 
@@ -104,7 +109,7 @@ void main() {
           return Timer.periodic(duration, (timer) => callback(timer));
         }
 
-        final cubit = TimerRunningCubit(settings, ticker: fakeTicker, player: AudioPlayer());
+        final cubit = TimerRunningCubit(settings, ticker: fakeTicker, player: FakeAudioPlayer());
 
         cubit.startTimer();
 
@@ -134,7 +139,7 @@ void main() {
           return Timer.periodic(duration, (timer) => callback(timer));
         }
 
-        final cubit = TimerRunningCubit(settings, ticker: fakeTicker, player: AudioPlayer());
+        final cubit = TimerRunningCubit(settings, ticker: fakeTicker, player: FakeAudioPlayer());
 
         cubit.startTimer();
 
@@ -164,7 +169,7 @@ void main() {
           return Timer.periodic(duration, (timer) => callback(timer));
         }
 
-        final cubit = TimerRunningCubit(settings, ticker: fakeTicker, player: AudioPlayer());
+        final cubit = TimerRunningCubit(settings, ticker: fakeTicker, player: FakeAudioPlayer());
 
         cubit.startTimer();
 

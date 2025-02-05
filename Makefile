@@ -22,7 +22,7 @@ endif
 	cd $(NAME) && flutter create . --platform web
 
 	@echo "Building for web..."
-	cd $(NAME) && flutter build web --base-href $(BASE_HREF) --release
+	cd $(NAME) && flutter build web --release --base-href $(BASE_HREF) --release
 
 	@echo "Deploying to git repository"
 	cd $(NAME)/build/web && \

@@ -1,46 +1,31 @@
 # Makefile for deploying the Flutter web projects to GitHub
 
-# --- Configuration ---
-# Default output directory name (can be overridden when running 'make deploy')
-DEFAULT_OUTPUT ?= my-flutter-web-app
-# Replace this with your GitHub username
-GITHUB_USER ?= MaeF41
-# Base href for the web app (used for routing)
-BASE_HREF ?= /$(OUTPUT)/
-# --- End Configuration ---
-
-# Derived variables (do not modify)
-GITHUB_REPO = https://github.com/$(GITHUB_USER)/$(OUTPUT)
-BUILD_VERSION := $(shell grep 'version:' pubspec.yaml | awk '{print $$2}')
-
-# --- Targets ---
+BASE_HREF = /$(NAME)/
+# Replace with your GitHub username
+GITHUB_USER = bizz84
+GITHUB_REPO = https://github.com/$(GITHUB_USER)/$(NAME)
+BUILD_VERSION := $(if $(NAME),$(shell grep 'version:' $(NAME)/pubspec.yaml | awk '{print $$2}'))
 
 # Deploy the Flutter web project to GitHub
-deploy: check-output clean build deploy-to-git print-success
-
-# Check if OUTPUT is set, otherwise use the default
-check-output:
-ifndef OUTPUT
-	$(eval OUTPUT := $(DEFAULT_OUTPUT))
-	@echo "OUTPUT not set. Using default: $(OUTPUT)"
+deploy:
+ifndef NAME
+	$(error NAME is not set. Usage: make deploy NAME=<name>)
 endif
 
-# Clean the project
-clean:
-	@echo "🧹 Cleaning project..."
-	flutter clean
+	@echo "Clean existing repository"
+	cd $(NAME) && flutter clean
 
-# Build the Flutter web project
-build:
-	@echo "📦 Building for web..."
-	flutter pub get
-	flutter create . --platforms=web # Use --platforms instead of --platform
-	flutter build web --base-href $(BASE_HREF) --release
+	@echo "Getting packages..."
+	cd $(NAME) && flutter pub get
 
-# Deploy the built web app to the GitHub repository
-deploy-to-git:
-	@echo "🚀 Deploying to git repository..."
-	cd build/web && \
+	@echo "Generating the web folder..."
+	cd $(NAME) && flutter create . --platform web
+
+	@echo "Building for web..."
+	cd $(NAME) && flutter build web --base-href $(BASE_HREF) --release
+
+	@echo "Deploying to git repository"
+	cd $(NAME)/build/web && \
 	git init && \
 	git add . && \
 	git commit -m "Deploy Version $(BUILD_VERSION)" && \
@@ -48,10 +33,53 @@ deploy-to-git:
 	git remote add origin $(GITHUB_REPO) && \
 	git push -u -f origin main
 
-# Print success message
-print-success:
 	@echo "✅ Finished deploy: $(GITHUB_REPO)"
-	@echo "🌐 Flutter web URL: https://$(GITHUB_USER).github.io/$(OUTPUT)/"
+	@echo "🚀 Flutter web URL: https://$(GITHUB_USER).github.io/$(NAME)/"
 
-# --- Phony Targets ---
-.PHONY: deploy check-output clean build deploy-to-git print-success
+## Archive the project as a zip file
+zip:
+ifndef NAME
+	$(error NAME is not set. Usage: make zip NAME=<name>)
+endif
+	@echo "Clean existing repository"
+	cd $(NAME) && flutter clean && rm -rf .idea android ios linux macos windows web test *.iml || true
+
+	@echo "Creating zipped project"
+	rm $(NAME).zip || true && zip -r $(NAME).zip $(NAME)
+
+## Create new Flutter project and copy all the files from the template
+create:
+ifndef NAME
+	$(error NAME is not set. Usage: make create NAME=<name>)
+endif
+
+	@echo "Creating new Flutter project..."
+	flutter create -e $(NAME)
+
+	@echo "Copying files from the template..."
+	cp -r template/.vscode $(NAME)
+	cp template/.gitignore $(NAME)
+	cp template/CHANGELOG.md $(NAME)
+	cp template/LICENSE.md $(NAME)
+	cp template/README.md $(NAME)
+
+	@echo "Getting packages..."
+	cd $(NAME) && flutter pub get
+
+	@echo "✅ Finished creating new project: $(NAME)"
+
+## Prepare for development
+dev:
+ifndef NAME
+	$(error NAME is not set. Usage: make dev NAME=<name>)
+endif
+	@echo "Getting packages..."
+	cd $(NAME) && flutter pub get
+
+	@echo "Generating the platform folders..."
+	cd $(NAME) && flutter create .
+
+	@echo "Deleting the test folder..."
+	cd $(NAME) && rm -rf test || true
+
+.PHONY: deploy

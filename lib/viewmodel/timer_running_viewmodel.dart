@@ -8,8 +8,8 @@ import 'package:muay_time/model/timer_setting.dart';
 typedef Ticker = Timer Function(Duration duration, void Function(Timer) callback);
 
 enum SoundTypeAsset {
-  shortBell("sound/bell-short.mp3"),
-  longBell("sound/bell.mp3");
+  shortBell("assets/sound/bell-short.mp3"),
+  longBell("assets/sound/bell.mp3");
 
   final String dir;
 

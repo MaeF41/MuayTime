@@ -6,7 +6,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:muay_time/model/timer_setting.dart';
 import 'package:muay_time/viewmodel/timer_running_viewmodel.dart';
 
-import 'mocks.dart';
 
 typedef Ticker = Timer Function(Duration duration, void Function(Timer) callback);
 
@@ -27,7 +26,7 @@ void main() {
       FakeAsync().run((async) {
         fakeTicker(Duration duration, void Function(Timer) callback) =>
             Timer.periodic(duration, (timer) => callback(timer));
-        final cubit = TimerRunningCubit(settings, ticker: fakeTicker, player: FakeAudioPlayer());
+        final cubit = TimerRunningCubit(settings, ticker: fakeTicker);
 
         final state = cubit.state;
 
@@ -45,7 +44,7 @@ void main() {
           return Timer.periodic(duration, (timer) => callback(timer));
         }
 
-        final cubit = TimerRunningCubit(settings, ticker: fakeTicker, player: FakeAudioPlayer());
+        final cubit = TimerRunningCubit(settings, ticker: fakeTicker);
 
         cubit.startTimer();
 
@@ -66,7 +65,7 @@ void main() {
           return Timer.periodic(duration, (timer) => callback(timer));
         }
 
-        final cubit = TimerRunningCubit(settings, ticker: fakeTicker, player: FakeAudioPlayer());
+        final cubit = TimerRunningCubit(settings, ticker: fakeTicker);
 
         cubit.startTimer();
 
@@ -87,7 +86,7 @@ void main() {
           return Timer.periodic(duration, (timer) => callback(timer));
         }
 
-        final cubit = TimerRunningCubit(settings, ticker: fakeTicker, player: FakeAudioPlayer());
+        final cubit = TimerRunningCubit(settings, ticker: fakeTicker);
 
         cubit.startTimer();
 
@@ -109,7 +108,7 @@ void main() {
           return Timer.periodic(duration, (timer) => callback(timer));
         }
 
-        final cubit = TimerRunningCubit(settings, ticker: fakeTicker, player: FakeAudioPlayer());
+        final cubit = TimerRunningCubit(settings, ticker: fakeTicker);
 
         cubit.startTimer();
 
@@ -139,7 +138,7 @@ void main() {
           return Timer.periodic(duration, (timer) => callback(timer));
         }
 
-        final cubit = TimerRunningCubit(settings, ticker: fakeTicker, player: FakeAudioPlayer());
+        final cubit = TimerRunningCubit(settings, ticker: fakeTicker);
 
         cubit.startTimer();
 
@@ -169,7 +168,7 @@ void main() {
           return Timer.periodic(duration, (timer) => callback(timer));
         }
 
-        final cubit = TimerRunningCubit(settings, ticker: fakeTicker, player: FakeAudioPlayer());
+        final cubit = TimerRunningCubit(settings, ticker: fakeTicker);
 
         cubit.startTimer();
 

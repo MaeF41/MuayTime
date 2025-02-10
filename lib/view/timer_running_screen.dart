@@ -21,7 +21,6 @@ class TimerRunningScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => TimerRunningCubit(
         settings,
-        player: audioPlayer,
         ticker: (duration, callback) => Timer.periodic(duration, callback),
       )..startTimer(),
       child: BlocBuilder<TimerRunningCubit, TimerRunningState>(

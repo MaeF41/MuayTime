@@ -20,9 +20,8 @@ class TimerRunningCubit extends Cubit<TimerRunningState> {
   Timer? _timer;
   final TimerSettings settings;
   final Ticker ticker;
-  final AudioPlayer player;
 
-  TimerRunningCubit(this.settings, {required this.ticker, required this.player})
+  TimerRunningCubit(this.settings, {required this.ticker,  })
       : super(TimerRunningState(
           currentRound: 1,
           remainingTime: settings.roundDuration.inMilliseconds,
@@ -31,21 +30,19 @@ class TimerRunningCubit extends Cubit<TimerRunningState> {
           isFinished: false,
         ));
 
-  void _playSound(SoundTypeAsset type) async {
-    if (isTestEnvironment) return; // Skip playing sound in tests
+  final shortPlayer = AudioPlayer();
+  final longPlayer = AudioPlayer();
 
-    final soundAsset = (type == SoundTypeAsset.shortBell)
-        ? SoundTypeAsset.shortBell.dir
-        : SoundTypeAsset.longBell.dir;
-    await player.setAsset(soundAsset);
-
+  void _playSound(AudioPlayer player) {
     player.play();
   }
 
-  bool get isTestEnvironment => Zone.current[#isTest] == true;
 
   void startTimer() {
-    _startCountdown();
+  shortPlayer.setAsset(SoundTypeAsset.shortBell.dir);
+  longPlayer.setAsset(SoundTypeAsset.longBell.dir);
+
+  _startCountdown();
     emit(state.copyWith(isPaused: false));
   }
 
@@ -65,7 +62,7 @@ class TimerRunningCubit extends Cubit<TimerRunningState> {
   }
 
   void _transitionToNextPhase() {
-    _playSound(SoundTypeAsset.shortBell);
+    _playSound(shortPlayer);
     if (state.isBreak) {
       _handleBreakPhase();
     } else {
@@ -79,7 +76,7 @@ class TimerRunningCubit extends Cubit<TimerRunningState> {
 
   void _handleRoundPhase() {
     if (_isLastRound()) {
-      _playSound(SoundTypeAsset.shortBell);
+      _playSound(shortPlayer);
       _finishTimer();
     } else {
       emit(state.copyWith(
@@ -105,7 +102,7 @@ class TimerRunningCubit extends Cubit<TimerRunningState> {
 
   void _finishTimer() {
     _timer?.cancel();
-    _playSound(SoundTypeAsset.longBell);
+    _playSound(longPlayer);
     emit(state.copyWith(isFinished: true));
   }
 

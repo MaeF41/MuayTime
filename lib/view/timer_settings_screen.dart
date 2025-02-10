@@ -14,7 +14,7 @@ class SettingsScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           textAlign: TextAlign.center,
-          'Set Timer Settings',
+          'Set Timer Settings.',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
       ),

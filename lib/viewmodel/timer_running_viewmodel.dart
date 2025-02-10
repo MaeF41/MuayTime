@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:muay_time/model/timer_running_state.dart';
 import 'package:muay_time/model/timer_setting.dart';
 
@@ -31,14 +31,15 @@ class TimerRunningCubit extends Cubit<TimerRunningState> {
           isFinished: false,
         ));
 
-  void _playSound(SoundTypeAsset type) {
+  void _playSound(SoundTypeAsset type) async {
     if (isTestEnvironment) return; // Skip playing sound in tests
 
     final soundAsset = (type == SoundTypeAsset.shortBell)
         ? SoundTypeAsset.shortBell.dir
         : SoundTypeAsset.longBell.dir;
+    await player.setAsset(soundAsset);
 
-    player.play(AssetSource(soundAsset));
+    player.play();
   }
 
   bool get isTestEnvironment => Zone.current[#isTest] == true;

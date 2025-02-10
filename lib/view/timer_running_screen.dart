@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:muay_time/model/timer_running_state.dart';
 import 'package:muay_time/model/timer_setting.dart';
 import 'package:muay_time/view/timer_settings_screen.dart';
